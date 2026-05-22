@@ -9,7 +9,7 @@ public class GameController : MonoBehaviour
 
     public Text scoreText;
     int score;
-    float multiValue;
+    float multiValue = 1f; // FIX #5: default multiplier is 1 (not 0) so score always displays correctly
     public int sceneIndex;
     private void OnEnable()
     {
@@ -21,7 +21,8 @@ public class GameController : MonoBehaviour
     public void UpdateScore(int valueIn)
     {
         score += valueIn;
-        scoreText.text = score.ToString();
+        // FIX #5: always apply current multiplier when displaying score
+        scoreText.text = Mathf.RoundToInt(score * multiValue).ToString();
     }
     public void UpdateMulti(float valueIn)
     {
@@ -30,6 +31,7 @@ public class GameController : MonoBehaviour
             return;
         }
         multiValue = valueIn;
-        scoreText.text = (score * multiValue).ToString();
+        // FIX #5: update display with new multiplier applied to current score
+        scoreText.text = Mathf.RoundToInt(score * multiValue).ToString();
     }
 }

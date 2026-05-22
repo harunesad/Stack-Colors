@@ -17,7 +17,10 @@ public class PlayerFollow : MonoBehaviour
             Vector3 posCam = new Vector3(4.27f, 3.65f, -4f);
             transform.position = Vector3.Lerp(transform.position, targetTransform.position + posCam, Time.deltaTime);
         }
-        if (PlayerController.instance.end == true && PlayerController.instance.isPlay == false)
+        // FIX #3: null check for parentCollect before accessing its position
+        if (PlayerController.instance.end == true
+            && PlayerController.instance.isPlay == false
+            && PlayerController.instance.parentCollect != null)
         {
             Vector3 posCam = new Vector3(0, 1.65f, -2f);
             transform.position = Vector3.Lerp(transform.position, PlayerController.instance.parentCollect.position + posCam, Time.deltaTime);

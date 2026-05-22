@@ -15,9 +15,8 @@ public class Multi : MonoBehaviour
     {
         for (int i = 0; i < renderers.Length; i++)
         {
-            renderers[i].material.SetColor("Color", multiColor);
-            renderers[i].material.color = renderers[i].material.GetColor("Color");
-
+            // FIX #1: "_Color" is the correct shader property name
+            renderers[i].material.SetColor("_Color", multiColor);
         }
     }
     private void OnCollisionEnter(Collision collision)

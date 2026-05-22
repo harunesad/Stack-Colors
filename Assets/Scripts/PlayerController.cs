@@ -38,13 +38,13 @@ public class PlayerController : MonoBehaviour
         charColor = c;
         for (int i = 0; i < charRenderer.Length; i++)
         {
-            charRenderer[i].material.SetColor("Color", charColor);
-            charRenderer[i].material.color = charRenderer[i].material.GetColor("Color"); 
+            // FIX #1: "_Color" is the correct shader property name
+            charRenderer[i].material.SetColor("_Color", charColor);
         }
     }
     void MoveForward()
     {
-        charRb.velocity = Vector3.forward * forwardSpeed;
+        charRb.linearVelocity = Vector3.forward * forwardSpeed;
     }
     void MoveHorizontal()
     {
@@ -70,14 +70,18 @@ public class PlayerController : MonoBehaviour
         }
         if (other.CompareTag("FinishLineEnd"))
         {
-            charRb.velocity = Vector3.zero;
+            charRb.linearVelocity = Vector3.zero;
             isPlay = false;
             LaunchStack();
+            return; // FIX #4: early return so we don't process Collect after finish
         }
+
+        // FIX #4: guard moved after FinishLine checks so finish line always triggers
         if (end)
         {
             return;
         }
+
         if (other.CompareTag("Collect"))
         {
             Transform otherTransform = other.transform;
@@ -94,12 +98,14 @@ public class PlayerController : MonoBehaviour
                 {
                     if (parentCollect.childCount > 0)
                     {
-                        parentCollect.position -= Vector3.up * parentCollect.GetChild(parentCollect.childCount - 1).localScale.y;
+                        // use localScale.y / 2 + 0.5 extra height offset
+                        parentCollect.position -= Vector3.up * (parentCollect.GetChild(parentCollect.childCount - 1).localScale.y / 2f + 0.5f);
                         Destroy(parentCollect.GetChild(parentCollect.childCount - 1).gameObject);
                     }
                     else
                     {
                         Destroy(parentCollect.gameObject);
+                        parentCollect = null;
                     }
                 }
                 return;
@@ -116,7 +122,8 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                parentCollect.position += Vector3.up * (otherTransform.localScale.y);
+                // use localScale.y / 2 + 0.5 extra height offset
+                parentCollect.position += Vector3.up * (otherTransform.localScale.y / 2f + 0.5f);
                 otherTransform.position = stackPosition.position;
                 otherTransform.parent = parentCollect;
             }
@@ -124,7 +131,11 @@ public class PlayerController : MonoBehaviour
     }
     void LaunchStack()
     {
-        kick(forwardForce);
+        // FIX #2: only invoke kick if there are subscribers (stack is not empty)
+        if (kick != null)
+        {
+            kick(forwardForce);
+        }
     }
     void Move()
     {

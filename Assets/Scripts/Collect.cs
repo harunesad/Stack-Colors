@@ -27,8 +27,8 @@ public class Collect : MonoBehaviour
     private void Awake()
     {
         render = gameObject.GetComponent<Renderer>();
-        render.material.SetColor("Color", collectColor);
-        render.material.color = render.material.GetColor("Color");
+        // FIX #1: "_Color" is the correct shader property name
+        render.material.SetColor("_Color", collectColor);
     }
     public Color GetColor()
     {

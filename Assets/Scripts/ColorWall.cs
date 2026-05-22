@@ -10,8 +10,8 @@ public class ColorWall : MonoBehaviour
         Color color = newColor;
         color.a = 0.5f;
         Renderer renderer = gameObject.GetComponentInChildren<Renderer>();
-        renderer.material.SetColor("Color", color);
-        renderer.material.color = renderer.material.GetColor("Color");
+        // FIX #1: "_Color" is the correct shader property name
+        renderer.material.SetColor("_Color", color);
     }
     public Color GetColor()
     {
